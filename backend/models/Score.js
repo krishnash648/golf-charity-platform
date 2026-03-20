@@ -25,25 +25,29 @@ const scoreSchema = new mongoose.Schema(
   }
 );
 
-// Index for efficient queries
-scoreSchema.index({ userId: 1, date: -1 });
+// ✅ Index for fast queries
+scoreSchema.index({ userId: 1, createdAt: -1 });
 
-// Static method to get user's scores sorted by date (latest first)
+
+// ✅ Get latest 5 scores (PRD compliant)
 scoreSchema.statics.getUserScores = function(userId) {
   return this.find({ userId })
-    .sort({ date: -1 })
-    .populate('userId', 'name email');
+    .sort({ createdAt: -1 }) // latest first
+    .limit(5);
 };
 
-// Static method to get user's score count
+
+// ✅ Get score count
 scoreSchema.statics.getUserScoreCount = function(userId) {
   return this.countDocuments({ userId });
 };
 
-// Static method to delete oldest score for a user
+
+// ✅ Delete oldest score (PRD logic)
 scoreSchema.statics.deleteOldestScore = function(userId) {
   return this.findOneAndDelete({ userId })
-    .sort({ date: 1 }); // Sort by date ascending to get oldest
+    .sort({ createdAt: 1 }); // oldest first
 };
+
 
 module.exports = mongoose.model('Score', scoreSchema);
