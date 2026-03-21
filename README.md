@@ -3,7 +3,7 @@
 ## 🚀 Live Demo
 
 🌐 Frontend (Vercel):  
-https://golf-charity-platform-delta.vercel.app  
+[https://golf-charity-platform-delta.vercel.app](https://golf-charity-platform-delta.vercel.app/dashboard)  
 
 ⚙️ Backend API (Render):  
 https://golf-charity-platform-968z.onrender.com  
