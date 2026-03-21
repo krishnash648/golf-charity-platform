@@ -30,10 +30,27 @@ function Dashboard() {
 
     if (!token) {
       navigate("/");
-    } else {
+      return;
+    }
+
+    // Validate token format (basic check)
+    if (token.length < 10) {
+      console.error("Invalid token format");
+      localStorage.removeItem("token");
+      navigate("/");
+      return;
+    }
+
+    try {
       fetchScores();
       fetchDrawHistory();
       fetchGlobalLeaderboard();
+    } catch (error) {
+      console.error("Authentication failed:", error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+      }
     }
   }, []);
 
@@ -76,9 +93,15 @@ function Dashboard() {
     try {
       setLoadingScores(true);
       const res = await API.get("/scores");
-      setScores(res.data.data.scores);
+      const scoresData = res.data?.data?.scores || res.data?.scores || res.data || [];
+      setScores(scoresData);
     } catch (err) {
       console.error(err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
       setError("Failed to load scores");
     } finally {
       setLoadingScores(false);
@@ -88,9 +111,15 @@ function Dashboard() {
   const fetchDrawHistory = async () => {
     try {
       const res = await API.get("/draw");
-      setDrawHistory(res.data.data);
+      const historyData = res.data?.data || res.data || [];
+      setDrawHistory(historyData);
     } catch (err) {
       console.error(err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
       setError("Failed to load draw history");
     }
   };
@@ -98,9 +127,15 @@ function Dashboard() {
   const fetchGlobalLeaderboard = async () => {
     try {
       const res = await API.get("/scores/leaderboard");
-      setGlobalLeaderboard(res.data.data);
+      const leaderboardData = res.data?.data || res.data || [];
+      setGlobalLeaderboard(leaderboardData);
     } catch (err) {
       console.error(err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
       setError("Failed to load global leaderboard");
     }
   };
@@ -111,7 +146,10 @@ function Dashboard() {
       return;
     }
     const scoreNum = Number(newScore);
-    if (isNaN(scoreNum) || scoreNum < 1 || scoreNum > 45) return alert("Score must be between 1 and 45");
+    if (isNaN(scoreNum) || scoreNum < 1 || scoreNum > 45) {
+      alert("Score must be between 1 and 45");
+      return;
+    }
 
     // Check if user already has 5 scores
     if (scores.length >= 5) {
@@ -133,6 +171,11 @@ function Dashboard() {
       }, 2000);
     } catch (err) {
       console.error(err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
       setError("Failed to add score");
     } finally {
       setLoading(false);
@@ -145,8 +188,8 @@ function Dashboard() {
       setError("");
 
       const res = await API.post("/draw/run");
-
-      setDrawResult(res.data.data);
+      const drawData = res.data?.data || res.data;
+      setDrawResult(drawData);
       
       // Success feedback
       setTimeout(() => {
