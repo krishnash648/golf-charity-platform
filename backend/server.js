@@ -6,7 +6,7 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/userRoutes');
 const scoreRoutes = require('./routes/scoreRoutes');
-const drawRoutes = require('./routes/drawRoutes'); // ✅ NEW
+const drawRoutes = require('./routes/drawRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -21,9 +21,12 @@ connectDB();
  * Middleware Configuration
  */
 
-// ✅ CORS (for Vite frontend)
+// ✅ FIXED CORS (IMPORTANT)
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://golf-charity-platform-delta.vercel.app"
+  ],
   credentials: true
 }));
 
@@ -64,7 +67,7 @@ app.get('/api', (req, res) => {
         addScore: 'POST /api/scores',
         getScores: 'GET /api/scores'
       },
-      draw: { // ✅ NEW
+      draw: {
         runDraw: 'POST /api/draw/run'
       }
     }
@@ -74,7 +77,7 @@ app.get('/api', (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/scores', scoreRoutes);
-app.use('/api/draw', drawRoutes); // ✅ NEW
+app.use('/api/draw', drawRoutes);
 
 /**
  * Error Handling
@@ -91,9 +94,9 @@ app.listen(PORT, () => {
   console.log(`
 🚀 Server is running on port ${PORT}
 📝 Environment: ${process.env.NODE_ENV || 'development'}
-🌐 CORS enabled for: http://localhost:5173
+🌐 CORS enabled for: production + localhost
 📊 MongoDB URI: ${process.env.MONGODB_URI ? '✅ Configured' : '❌ Not configured'}
-🎲 Draw API: http://localhost:${PORT}/api/draw/run
+🎲 Draw API: /api/draw/run
   `);
 });
 
