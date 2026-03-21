@@ -21,12 +21,25 @@ connectDB();
  * Middleware Configuration
  */
 
-// ✅ FIXED CORS (IMPORTANT)
+// ✅ FINAL CORS FIX (production-ready)
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://golf-charity-platform-delta.vercel.app"
-  ],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+
+    // allow localhost
+    if (origin.includes("localhost")) {
+      return callback(null, true);
+    }
+
+    // allow ALL vercel domains
+    if (origin.includes("vercel.app")) {
+      return callback(null, true);
+    }
+
+    // block others
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true
 }));
 
@@ -94,7 +107,7 @@ app.listen(PORT, () => {
   console.log(`
 🚀 Server is running on port ${PORT}
 📝 Environment: ${process.env.NODE_ENV || 'development'}
-🌐 CORS enabled for: production + localhost
+🌐 CORS enabled for: localhost + all vercel domains
 📊 MongoDB URI: ${process.env.MONGODB_URI ? '✅ Configured' : '❌ Not configured'}
 🎲 Draw API: /api/draw/run
   `);
