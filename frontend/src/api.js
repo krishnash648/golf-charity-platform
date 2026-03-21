@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://golf-charity-platform-968z.onrender.com/api",
 });
 
 // Add token automatically
