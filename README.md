@@ -124,7 +124,7 @@ Implements custom business logic:
 **Krishna Sharma**
 
 - GitHub: https://github.com/krishnash648  
-- LinkedIn: (add your link here)
+- LinkedIn: (https://www.linkedin.com/in/krishna-sharma-539184215/)
 
 ---
 
